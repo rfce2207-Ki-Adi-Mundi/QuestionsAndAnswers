@@ -5,7 +5,7 @@ const client = new Client({
   user: 'sunjuhwang',
   port: 5432,
   password: '',
-  database: 'olddata'
+  database: 'questionsandanswers'
 });
 
 client.connect((err) => {
