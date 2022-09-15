@@ -1,3 +1,5 @@
+//I USED \COPY IN THE PSQL COMMAND-LINE TO IMPORT THE VARIOUS CSV FILES
+
 const {Client} = require('pg');
 
 const client = new Client({
