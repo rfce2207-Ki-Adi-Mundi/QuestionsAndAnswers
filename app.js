@@ -27,7 +27,7 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
   };
   if (limit > 50) {
     limit = 50;
-  }; //SELECT ONLY INFO YOU NEED, THEN ADD ANOTHRE QUERY TO ADD ANSWERS TO INFO OBJECT
+  };
   db.query(`SELECT question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answer_id, body, date, answerer_name, helpfulness from questions inner join answers on questions.question_id = answers.question where product_id = ${product} order by questions.question_helpfulness desc limit ${limit} offset ${(page - 1) * 10};`, (err, result) => {
     if (err) {
       res.sendStatus(400);
@@ -35,6 +35,8 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
     }
     result.rows.forEach((object, index) => {
       if (!info.results.some(e => e.question_id === object.question_id)) {
+        // let photosArr = [];
+        // photosArr.push();
         let answersObj = {};
         answersObj[object.answer_id] = {
           id: object.answer_id,
@@ -53,8 +55,16 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
           reported: !!object.reported,
           answers: answersObj
         });
-
-        //add answers
+      } else {
+        let index = info.results.findIndex(elem => elem.question_id === object.question_id);
+        info.results[index].answers[object.answer_id] = {
+          id: object.answer_id,
+          body: object.body,
+          date: object.date,
+          answerer_name: object.answerer_name,
+          helpfulness: object.helpfulness,
+          photos: []
+        };
       };
     });
     console.log(result.rows);
@@ -66,11 +76,16 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
 //   let product = parseInt(req.query.product_id);
 //   let page = parseInt(req.query.page) || 1;
 //   let limit = parseInt(req.query.count) || 10;
-//   db.query(`SELECT question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answer_id, body, date, answerer_name, helpfulness from questions inner join answers on questions.question_id = answers.question where product_id = ${product} order by questions.question_helpfulness desc limit ${limit} offset ${(page - 1) * 10};`, (err, result) => {
+//   db.query(`SELECT question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answers.answer_id, body, date, answerer_name, helpfulness, json_agg(photos.url) as photos from questions inner join answers on question_id = question inner join photos on answers.answer_id = photos.answer_id where product_id = 37316 group by question_id, answers.answer_id order by questions.question_helpfulness desc limit 10 offset 0;`, (err, result) => {
 //     if (err) {
 //       res.sendStatus(400);
 //       console.log(err);
 //     }
-//     res.status(200).json(result.rows);
+//     let data = {};
+//     data.first = result.rows;
+//     db.query(`select json_agg(photos.url) from photos inner join answers on answers.answer_id = photos.answer_id where answers.answer_id = 5`, (err, result) => {
+//       data.photos = result.rows[0].json_agg;
+//       res.status(200).json(data);
+//     });
 //   });
 // })
