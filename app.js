@@ -35,6 +35,15 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
     }
     result.rows.forEach((object, index) => {
       if (!info.results.some(e => e.question_id === object.question_id)) {
+        let answersObj = {};
+        answersObj[object.answer_id] = {
+          id: object.answer_id,
+          body: object.body,
+          date: object.date,
+          answerer_name: object.answerer_name,
+          helpfulness: object.helpfulness,
+          photos: []
+        };
         info.results.push({
           question_id: object.question_id,
           question_body: object.question_body,
@@ -42,15 +51,16 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
           asker_name: object.asker_name,
           question_helpfulness: object.question_helpfulness,
           reported: !!object.reported,
-          answers: {}
+          answers: answersObj
         });
+
         //add answers
       };
     });
     console.log(result.rows);
     res.status(200).json(info);
   });
-})
+});
 
 // app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID INTO VARCHAR IN TABLE SCHEMA
 //   let product = parseInt(req.query.product_id);
