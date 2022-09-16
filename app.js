@@ -22,18 +22,45 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.count) || 10;
   let info = {
-    product_info: product,
+    product_id: product,
+    results: []
   };
   if (limit > 50) {
     limit = 50;
   }; //SELECT ONLY INFO YOU NEED, THEN ADD ANOTHRE QUERY TO ADD ANSWERS TO INFO OBJECT
-  db.query(`SELECT * from questions where product_id = ${product} order by questions.helpful desc limit ${limit} offset ${(page - 1) * 10};`, (err, result) => {
+  db.query(`SELECT question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answer_id, body, date, answerer_name, helpfulness from questions inner join answers on questions.question_id = answers.question where product_id = ${product} order by questions.question_helpfulness desc limit ${limit} offset ${(page - 1) * 10};`, (err, result) => {
     if (err) {
       res.sendStatus(400);
       console.log(err);
     }
-    info.results = result.rows
+    result.rows.forEach((object, index) => {
+      if (!info.results.some(e => e.question_id === object.question_id)) {
+        info.results.push({
+          question_id: object.question_id,
+          question_body: object.question_body,
+          question_date: object.question_date,
+          asker_name: object.asker_name,
+          question_helpfulness: object.question_helpfulness,
+          reported: !!object.reported,
+          answers: {}
+        });
+        //add answers
+      };
+    });
+    console.log(result.rows);
     res.status(200).json(info);
-    console.log(info);
   });
 })
+
+// app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID INTO VARCHAR IN TABLE SCHEMA
+//   let product = parseInt(req.query.product_id);
+//   let page = parseInt(req.query.page) || 1;
+//   let limit = parseInt(req.query.count) || 10;
+//   db.query(`SELECT question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answer_id, body, date, answerer_name, helpfulness from questions inner join answers on questions.question_id = answers.question where product_id = ${product} order by questions.question_helpfulness desc limit ${limit} offset ${(page - 1) * 10};`, (err, result) => {
+//     if (err) {
+//       res.sendStatus(400);
+//       console.log(err);
+//     }
+//     res.status(200).json(result.rows);
+//   });
+// })
