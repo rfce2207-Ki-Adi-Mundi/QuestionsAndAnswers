@@ -19,13 +19,13 @@ client.connect((err) => {
   });
 
 
-client.query(`CREATE TABLE IF NOT EXISTS questions ( question_id int PRIMARY KEY NOT NULL, product_id int NOT NULL, body text NOT NULL, date_written bigint NOT NULL, asker_name varchar(40) NOT NULL, asker_email text NOT NULL, reported smallint NOT NULL, helpful smallint NOT NULL);`, (err, res) => {
+client.query(`CREATE TABLE IF NOT EXISTS questions ( question_id int PRIMARY KEY NOT NULL, product_id int NOT NULL, question_body text NOT NULL, question_date bigint NOT NULL, asker_name varchar(40) NOT NULL, asker_email text NOT NULL, reported smallint NOT NULL, question_helpfulness smallint NOT NULL);`, (err, res) => {
   if (err) {
     console.log('error creating questions table', err);
     return;
   }
   console.log('questions table created!');
-  client.query(`CREATE TABLE IF NOT EXISTS answers ( answer_id int PRIMARY KEY NOT NULL, question_id int not null, body text not null, date_written bigint not null, answerer_name varchar(40) not null, answerer_email text not null, reported smallint, helpful smallint, CONSTRAINT fk_questions FOREIGN KEY(question_id) REFERENCES questions(question_id));`, (err, res) => {
+  client.query(`CREATE TABLE IF NOT EXISTS answers ( answer_id int PRIMARY KEY NOT NULL, question int not null, body text not null, date bigint not null, answerer_name varchar(40) not null, answerer_email text not null, reported smallint, helpfulness smallint, CONSTRAINT fk_questions FOREIGN KEY(question_id) REFERENCES questions(question_id));`, (err, res) => {
     if (err) {
       console.log('error creating answers table');
       return;
