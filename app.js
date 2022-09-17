@@ -82,3 +82,48 @@ app.get('/qa/questions', async (req, res) => {
       res.sendStatus(400);
     })
 });
+
+
+app.get(`/qa/questions/:question_id/answers`, async (req, res) => {
+  let question = parseInt(req.params.question_id);
+  let count = 0;
+  let info = {
+    question: question,
+    count: count,
+    results: []
+  };
+  await db.query(`select answers.answer_id, body, date, answerer_name, helpfulness, photo_id, url from answers full outer join photos on answers.answer_id = photos.answer_id where question = ${question} order by answers.helpfulness desc;`)
+  .then(async (result) => {
+    result.rows.forEach((object) => {
+      if (!info.results.some(e => e.answer_id === object.answer_id)) {
+        let photosObj;
+        if (object.url !== null) {
+          photosObj = [{
+            id: object.photo_id,
+            url: object.url
+          }];
+        }
+        info.results.push({
+          answer_id: object.answer_id,
+          body: object.body,
+          date: object.date,
+          answerer_name: object.answerer_name,
+          helpfulness: object.helpfulness,
+          photos: photosObj || []
+        });
+        info.count++;
+        } else {
+          let index = info.results.findIndex(elem => elem.answer_id === object.answer_id);
+          info.results[index].photos.push({
+            id: object.photo_id,
+            url: object.url,
+            });
+          };
+    });
+    res.status(200).json(info);
+  })
+  .catch((err) => {
+    console.log('ERROR:', err);
+    res.sendStatus(400);
+  })
+});
