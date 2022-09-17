@@ -135,10 +135,9 @@ app.get(`/qa/questions/:question_id/answers`, async (req, res) => {
 
 //POST QUESTION
 app.post(`/qa/questions/`, async (req, res) => {
-  console.log(req.body);
   await db.query(`INSERT INTO questions (product_id, question_body, question_date, asker_name, asker_email, reported, question_helpfulness) VALUES (${req.body.product_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0);`)
     .then((result) => {
-      res.send('got it');
+      res.sendStatus(201);
     })
     .catch((err) => {
       console.log('error:', err);
@@ -147,14 +146,31 @@ app.post(`/qa/questions/`, async (req, res) => {
 });
 
 //POST ANSWER
-app.post(`/qa/questions/`, async (req, res) => {
-  console.log(req.body);
-  await db.query(`INSERT INTO questions (product_id, question_body, question_date, asker_name, asker_email, reported, question_helpfulness) VALUES (${req.body.product_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0);`)
+app.post(`/qa/questions/:question_id/answers`, async (req, res) => {
+  if (!req.body.photos) {
+    await db.query(`INSERT INTO answers (question, body, date, answerer_name, answerer_email, reported, helpfulness) VALUES (${req.params.question_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0);`)
     .then((result) => {
-      res.send('got it');
+      res.sendStatus(201);
     })
     .catch((err) => {
       console.log('error:', err);
       res.sendStatus(400);
     })
+  }
+  if (req.body.photos) {
+    await db.query(`INSERT INTO answers (question, body, date, answerer_name, answerer_email, reported, helpfulness) VALUES (${req.params.question_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0) RETURNING answer_id;`)
+    .then( async (result) => {
+      let temp = req.body.photos;
+      console.log(temp);
+      // await db.query(`INSERT INTO photos (answer_id, url) SELECT ${result.rows[0].answer_id} id, x FROM UNNEST(ARRAY[${}]) x;`)
+      // await db.query(`INSERT INTO photos (answer_id, url) SELECT ${result.rows[0].answer_id} id, x FROM UNNEST(ARRAY['this works1', 'this works2']) x;`)
+    })
+    .then((result) => {
+      res.sendStatus(201);
+    })
+    .catch((err) => {
+      console.log('error:', err);
+      res.sendStatus(400);
+    })
+  }
 });
