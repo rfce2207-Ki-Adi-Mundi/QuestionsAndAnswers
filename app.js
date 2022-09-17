@@ -38,7 +38,7 @@ app.get('/qa/questions', async (req, res) => {
           answersObj[object.answer_id] = {
             id: object.answer_id,
             body: object.body,
-            date: object.date,
+            date: new Date(Number(object.date)).toISOString(),
             answerer_name: object.answerer_name,
             helpfulness: object.helpfulness,
             photos: []
@@ -46,7 +46,7 @@ app.get('/qa/questions', async (req, res) => {
           info.results.push({
             question_id: object.question_id,
             question_body: object.question_body,
-            question_date: object.question_date,
+            question_date: new Date(Number(object.question_date)).toISOString(),
             asker_name: object.asker_name,
             question_helpfulness: object.question_helpfulness,
             reported: !!object.reported,
@@ -92,9 +92,12 @@ app.get(`/qa/questions/:question_id/answers`, async (req, res) => {
     count: count,
     results: []
   };
-  await db.query(`select answers.answer_id, body, date, answerer_name, helpfulness, photo_id, url from answers full outer join photos on answers.answer_id = photos.answer_id where question = ${question} order by answers.helpfulness desc;`)
+  await db.query(`select answers.answer_id, body, date, answerer_name, helpfulness, reported, photo_id, url from answers full outer join photos on answers.answer_id = photos.answer_id where question = ${question} order by answers.helpfulness desc;`)
   .then(async (result) => {
     result.rows.forEach((object) => {
+      if (!!object.reported) {
+        return;
+      }
       if (!info.results.some(e => e.answer_id === object.answer_id)) {
         let photosObj;
         if (object.url !== null) {
@@ -106,7 +109,7 @@ app.get(`/qa/questions/:question_id/answers`, async (req, res) => {
         info.results.push({
           answer_id: object.answer_id,
           body: object.body,
-          date: object.date,
+          date: new Date(Number(object.date)).toISOString(),
           answerer_name: object.answerer_name,
           helpfulness: object.helpfulness,
           photos: photosObj || []

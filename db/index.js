@@ -35,5 +35,8 @@ client.query(`CREATE TABLE IF NOT EXISTS questions ( question_id int PRIMARY KEY
     console.log('error creating tables:', err)
   });
 
+//CREATE INDEX photos_answer_id_idx ON photos (answer_id);
+//CREATE INDEX answers_question_idx ON answers (question);
+//CREATE INDEX questions_product_id_idx ON questions (product_id);
 
 module.exports = client;
