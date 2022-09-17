@@ -34,7 +34,7 @@ app.get('/qa/questions', (req, res) => { //IT MAY BE FASTER TO MAKE PRODUCT_ID I
       console.log(err);
     }
     result.rows.forEach( (object, index) => {
-      db.query(`select json_agg(photos.url) from photos inner join answers on answers.answer_id = photos.answer_id where answers.answer_id = 5 `, (err, result) => {
+      db.query(`select json_agg(photos.url) from photos inner join answers on answers.answer_id = photos.answer_id where answers.answer_id = ${object.answer_id} `, (err, result) => {
         console.log(result.rows[0].json_agg);
       });
       if (!info.results.some(e => e.question_id === object.question_id)) {
