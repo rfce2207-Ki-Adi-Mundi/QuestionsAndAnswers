@@ -1,4 +1,6 @@
-//I USED \COPY IN THE PSQL COMMAND-LINE TO IMPORT THE VARIOUS CSV FILES
+//  \COPY questions FROM '/Users/sunjuhwang/Hack Reactor/SDC/QuestionsAndAnswers/csvFiles/questionsData.csv' DELIMITER ',' CSV HEADER;
+//  \COPY answers FROM '/Users/sunjuhwang/Hack Reactor/SDC/QuestionsAndAnswers/csvFiles/answersData.csv' DELIMITER ',' CSV HEADER;
+//  \COPY photos FROM '/Users/sunjuhwang/Hack Reactor/SDC/QuestionsAndAnswers/csvFiles/answers_photosData.csv' DELIMITER ',' CSV HEADER;
 
 const {Client} = require('pg');
 

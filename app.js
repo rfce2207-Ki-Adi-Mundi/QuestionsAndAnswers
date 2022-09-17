@@ -160,10 +160,16 @@ app.post(`/qa/questions/:question_id/answers`, async (req, res) => {
   if (req.body.photos) {
     await db.query(`INSERT INTO answers (question, body, date, answerer_name, answerer_email, reported, helpfulness) VALUES (${req.params.question_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0) RETURNING answer_id;`)
     .then( async (result) => {
-      let temp = req.body.photos;
+      let temp = '';
+      req.body.photos.forEach((url, index) => {
+        if (index !== req.body.photos.length - 1) {
+          temp = temp + `'${url}'` + ', ';
+        } else {
+          temp = temp + `'${url}'`;
+        }
+      })
       console.log(temp);
-      // await db.query(`INSERT INTO photos (answer_id, url) SELECT ${result.rows[0].answer_id} id, x FROM UNNEST(ARRAY[${}]) x;`)
-      // await db.query(`INSERT INTO photos (answer_id, url) SELECT ${result.rows[0].answer_id} id, x FROM UNNEST(ARRAY['this works1', 'this works2']) x;`)
+      await db.query(`INSERT INTO photos (answer_id, url) SELECT ${result.rows[0].answer_id} id, x FROM UNNEST(ARRAY[${temp}]) x;`)
     })
     .then((result) => {
       res.sendStatus(201);
