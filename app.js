@@ -12,11 +12,13 @@ const port = process.env.PORT || 8080;
 //MIDDLEWARE
 app.use(cors());
 app.use(morgan('dev'));
+app.use(express.json());
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
 
+//GET QUESTIONS
 app.get('/qa/questions', async (req, res) => {
   let product = parseInt(req.query.product_id);
   let page = parseInt(req.query.page) || 1;
@@ -83,7 +85,7 @@ app.get('/qa/questions', async (req, res) => {
     })
 });
 
-
+//GET ANSWERS
 app.get(`/qa/questions/:question_id/answers`, async (req, res) => {
   let question = parseInt(req.params.question_id);
   let count = 0;
@@ -129,4 +131,30 @@ app.get(`/qa/questions/:question_id/answers`, async (req, res) => {
     console.log('ERROR:', err);
     res.sendStatus(400);
   })
+});
+
+//POST QUESTION
+app.post(`/qa/questions/`, async (req, res) => {
+  console.log(req.body);
+  await db.query(`INSERT INTO questions (product_id, question_body, question_date, asker_name, asker_email, reported, question_helpfulness) VALUES (${req.body.product_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0);`)
+    .then((result) => {
+      res.send('got it');
+    })
+    .catch((err) => {
+      console.log('error:', err);
+      res.sendStatus(400);
+    })
+});
+
+//POST ANSWER
+app.post(`/qa/questions/`, async (req, res) => {
+  console.log(req.body);
+  await db.query(`INSERT INTO questions (product_id, question_body, question_date, asker_name, asker_email, reported, question_helpfulness) VALUES (${req.body.product_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0);`)
+    .then((result) => {
+      res.send('got it');
+    })
+    .catch((err) => {
+      console.log('error:', err);
+      res.sendStatus(400);
+    })
 });
