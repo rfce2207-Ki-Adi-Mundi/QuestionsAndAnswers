@@ -42,5 +42,6 @@ client.query(`CREATE TABLE IF NOT EXISTS questions ( question_id int PRIMARY KEY
   });
 });
 
+      // db.query(`select json_agg(photos.url) from photos inner join answers on answers.answer_id = photos.answer_id where answers.answer_id = ${object.answer_id};`, (err, result2) => {
 
 module.exports = client;
