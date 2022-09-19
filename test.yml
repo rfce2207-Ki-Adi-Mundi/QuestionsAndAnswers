@@ -1,20 +1,30 @@
 config:
   target: "http://localhost:3000"
   phases:
-    - duration: 10
-      arrivalRate: 5
-      name: Warm up
-    - duration: 20
-      arrivalRate: 5
-      rampTo: 50
-      name: Ramp up load
+    # - duration: 10
+    #   arrivalRate: 5
+    #   name: Warm up
+    # - duration: 20
+    #   arrivalRate: 50
+    #   rampTo: 150
+    #   name: Ramp up load
     - duration: 30
-      arrivalRate: 50
+      arrivalRate: 100
       name: Sustained load
+  variables:
+    product_id:
+      - "966092"
+      - "994663"
+      - "937832"
+      - "951990"
+      - "980353"
+    count:
+      - "5"
 
+# //sudo sysctl -w net.inet.ip.portrange.first=32768 // 49152
 
 scenarios:
   - name: "Retrieve data"
     flow:
       - get:
-          url: "/qa/questions/4/answers"
+          url: "/qa/questions?product_id={{ product_id }}&count={{ count }}"

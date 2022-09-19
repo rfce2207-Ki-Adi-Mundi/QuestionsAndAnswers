@@ -5,6 +5,8 @@ const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 let app = express();
+const router = require('./routes.js');
+
 module.exports.app = app;
 
 const port = process.env.PORT || 8080;
@@ -14,10 +16,13 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`listening on port ${port}`)
-})
+});
 
+server.keepAliveTimeout = 49 * 1000;
+
+// app.use('/qa', router);
 //GET QUESTIONS
 app.get('/qa/questions', async (req, res) => {
   let product = parseInt(req.query.product_id);
