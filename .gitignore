@@ -1,4 +1,5 @@
 SDC2.cer
+.env
 node_modules
 answers_photosData.csv
 answersData.csv
@@ -7,4 +8,3 @@ test.yml
 test.json
 report.html
 .DS_Store
-.env
