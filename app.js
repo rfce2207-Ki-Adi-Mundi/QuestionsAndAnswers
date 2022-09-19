@@ -9,7 +9,7 @@ const router = require('./routes.js');
 
 module.exports.app = app;
 
-const port = process.env.PORT || 8080;
+const port = process.env.SERVERPORT || 8080;
 
 //MIDDLEWARE
 app.use(cors());

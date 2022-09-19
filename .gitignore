@@ -7,3 +7,4 @@ test.yml
 test.json
 report.html
 .DS_Store
+.env
