@@ -8,3 +8,5 @@ test.yml
 test.json
 report.html
 .DS_Store
+questionsandanswers.pgsql
+ec2-34-224-56-10.compute-1.amazonaws.com
