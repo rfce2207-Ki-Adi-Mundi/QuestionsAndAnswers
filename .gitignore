@@ -2,3 +2,6 @@ node_modules
 answers_photosData.csv
 answersData.csv
 questionsData.csv
+test.yml
+test.json
+report.html
