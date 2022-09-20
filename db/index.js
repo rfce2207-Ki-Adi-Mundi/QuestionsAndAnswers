@@ -16,7 +16,7 @@ client.connect((err) => {
       console.error('error connecting: ' + err.stack);
       return;
     }
-    console.log('connected to ' + client.database + ' as id ' + client.user + 'at port ' + client.port);
+    console.log('connected to ' + client.database + ' as id ' + client.user + ' at port ' + client.port);
 });
 
 //INVOKE ETL PROCESS IF EMPTY DATABASE
