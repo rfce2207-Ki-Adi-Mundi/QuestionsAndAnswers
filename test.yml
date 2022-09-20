@@ -9,7 +9,7 @@ config:
     #   rampTo: 150
     #   name: Ramp up load
     - duration: 30
-      arrivalRate: 100
+      arrivalRate: 20
       name: Sustained load
   variables:
     product_id:

@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const client = new Client({
   host: process.env.HOST,
-  user: process.env.USER,
+  user: process.env.NAME,
   port: process.env.PORT,
   password: process.env.PASSWORD,
   database: process.env.DATABASE
@@ -16,7 +16,7 @@ client.connect((err) => {
       console.error('error connecting: ' + err.stack);
       return;
     }
-    console.log('connected to ' + client.database + ' as id ' + client.user);
+    console.log('connected to ' + client.database + ' as id ' + client.user + 'at port ' + client.port);
 });
 
 //INVOKE ETL PROCESS IF EMPTY DATABASE
