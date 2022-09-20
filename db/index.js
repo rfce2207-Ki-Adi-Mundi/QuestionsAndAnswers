@@ -20,13 +20,13 @@ client.connect((err) => {
 });
 
 //INVOKE ETL PROCESS IF EMPTY DATABASE
-client.query(`SELECT count(*) from questions`)
-  .then((result) => {
-    console.log('success:', result.rows[0].count);
-  })
-  .catch((err) => {
-    invokeETL();
-});
+// client.query(`SELECT count(*) from questions`)
+//   .then((result) => {
+//     console.log('success:', result.rows[0].count);
+//   })
+//   .catch((err) => {
+//     invokeETL();
+// });
 
 
 //ETL PROCESS

@@ -88,6 +88,7 @@ app.get('/qa/questions', async (req, res) => {
       console.log(err);
       res.sendStatus(400);
     })
+    // res.sendStatus(200);
 });
 
 //GET ANSWERS
