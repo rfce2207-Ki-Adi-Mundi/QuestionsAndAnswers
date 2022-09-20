@@ -1,3 +1,5 @@
+const db = require('../db/index.js');
+
 module.exports = {
   get: async function (req, res) {
     let product = parseInt(req.query.product_id);
@@ -61,6 +63,16 @@ module.exports = {
       })
       .catch((err) => {
         console.log(err);
+        res.sendStatus(400);
+      })
+    },
+    post: async function (req, res) {
+      await db.query(`INSERT INTO questions (product_id, question_body, question_date, asker_name, asker_email, reported, question_helpfulness) VALUES (${req.body.product_id}, '${req.body.body}', 1616066721011, '${req.body.name}', '${req.body.email}', 0, 0);`)
+      .then((result) => {
+        res.sendStatus(201);
+      })
+      .catch((err) => {
+        console.log('error:', err);
         res.sendStatus(400);
       })
     }
