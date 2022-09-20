@@ -23,6 +23,12 @@ const server = app.listen(port, () => {
 server.keepAliveTimeout = 49 * 1000;
 
 // app.use('/qa', router);
+
+//LOADER.IO AUTHENTICATION
+app.get('/loaderio-4085198a399b511073837fffdf095583', (req, res) => {
+  res.download('./loaderio-4085198a399b511073837fffdf095583.txt');
+});
+
 //GET QUESTIONS
 app.get('/qa/questions', async (req, res) => {
   let product = parseInt(req.query.product_id);
