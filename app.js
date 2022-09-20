@@ -25,7 +25,7 @@ server.keepAliveTimeout = 49 * 1000;
 // app.use('/qa', router);
 
 //LOADER.IO AUTHENTICATION
-app.get('/loaderio-4085198a399b511073837fffdf095583', (req, res) => {
+app.get('/loaderio-4085198a399b511073837fffdf095583.txt', (req, res) => {
   res.download('./loaderio-4085198a399b511073837fffdf095583.txt');
 });
 
