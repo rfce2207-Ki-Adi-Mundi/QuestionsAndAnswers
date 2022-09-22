@@ -15,6 +15,9 @@ module.exports = {
     };
     await db.query(`select question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answers.answer_id, body, date, answerer_name, helpfulness from questions inner join answers on question_id = question where product_id = ${product} order by questions.question_helpfulness desc limit ${limit * 10} offset ${(page - 1) * 10};`)
       .then( async (result) => {
+        if (result.rows.length === 0) {
+          res.status(200).json(info);
+        }
         result.rows.forEach( async (object) => {
           answer_ids.push(object.answer_id);
           if (!info.results.some(e => e.question_id === object.question_id)) {
