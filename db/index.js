@@ -2,7 +2,7 @@ const {Client, Pool} = require('pg');
 require('dotenv').config();
 
 
-const client = new Client({
+const client = new Pool({
   host: process.env.HOST,
   user: process.env.NAME,
   port: process.env.PORT,
@@ -10,13 +10,13 @@ const client = new Client({
   database: process.env.DATABASE
 });
 
-//CONNECT TO DATABASE
+// CONNECT TO DATABASE
 client.connect((err) => {
     if (err) {
       console.error('error connecting: ' + err.stack);
       return;
     }
-    console.log('connected to ' + client.database + ' as id ' + client.user + ' at port ' + client.port);
+    console.log('connected to database');
 });
 
 //INVOKE ETL PROCESS IF EMPTY DATABASE
