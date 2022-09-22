@@ -1,8 +1,8 @@
-const {Client} = require('pg');
+const {Client, Pool} = require('pg');
 require('dotenv').config();
 
 
-const client = new Client({
+const client = new Pool({
   host: process.env.HOST,
   user: process.env.NAME,
   port: process.env.PORT,
