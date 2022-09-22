@@ -17,14 +17,14 @@ module.exports = {
       .then( async (result) => {
         if (result.rows.length === 0) {
           res.status(200).json(info);
+          return;
         } else {
-
-          result.rows.forEach( async (object) => {
-            answer_ids.push(object.answer_id);
-            if (!info.results.some(e => e.question_id === object.question_id)) {
-              let answersObj = {};
-              answersObj[object.answer_id] = {
-                id: object.answer_id,
+        result.rows.forEach( async (object) => {
+          answer_ids.push(object.answer_id);
+          if (!info.results.some(e => e.question_id === object.question_id)) {
+            let answersObj = {};
+            answersObj[object.answer_id] = {
+              id: object.answer_id,
               body: object.body,
               date: new Date(Number(object.date)).toISOString(),
               answerer_name: object.answerer_name,
@@ -40,32 +40,32 @@ module.exports = {
               reported: !!object.reported,
               answers: answersObj
             });
-          } else {
-            let index = info.results.findIndex(elem => elem.question_id === object.question_id);
-            info.results[index].answers[object.answer_id] = {
-              id: object.answer_id,
-              body: object.body,
-              date: object.date,
-              answerer_name: object.answerer_name,
-              helpfulness: object.helpfulness,
-              photos: []
-            };
-          };
-        })
-        let photos = await db.query(`SELECT answer_id, url FROM photos WHERE answer_id in (${answer_ids})`);
-        await info.results.forEach( (object) => {
-          for (let key in object.answers) {
-            photos.rows.forEach( (photo) => {
-              if (key === '' + photo.answer_id) {
-                object.answers[key].photos.push(photo.url);
-              }
-            })
-          }
-        });
-        res.status(200).json(info);
-        return;
+            } else {
+              let index = info.results.findIndex(elem => elem.question_id === object.question_id);
+              info.results[index].answers[object.answer_id] = {
+                id: object.answer_id,
+                body: object.body,
+                date: object.date,
+                answerer_name: object.answerer_name,
+                helpfulness: object.helpfulness,
+                photos: []
+                };
+              };
+          })
+          let photos = await db.query(`SELECT answer_id, url FROM photos WHERE answer_id in (${answer_ids})`);
+          await info.results.forEach( (object) => {
+            for (let key in object.answers) {
+              photos.rows.forEach( (photo) => {
+                if (key === '' + photo.answer_id) {
+                  object.answers[key].photos.push(photo.url);
+                }
+              })
+            }
+          });
+          res.status(200).json(info);
+          return;
+        }
       })
-    }
       .catch((err) => {
         console.log(err);
         res.sendStatus(400);
