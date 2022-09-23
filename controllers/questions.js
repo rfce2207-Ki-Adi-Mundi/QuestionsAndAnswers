@@ -6,6 +6,7 @@ module.exports = {
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.count) || 10;
     let answer_ids = [];
+    let final = [];
     let info = {
       product_id: product,
       results: []
@@ -13,57 +14,57 @@ module.exports = {
     if (limit > 50) {
       limit = 50;
     };
-    await db.query(`select question_id, product_id, question_body, question_date, asker_name, question_helpfulness, questions.reported, answers.answer_id, body, date, answerer_name, helpfulness from questions inner join answers on question_id = question where product_id = ${product} order by questions.question_helpfulness desc limit ${limit * 10} offset ${(page - 1) * 10};`)
+    await db.query(`SELECT json_build_object(
+      'question_id', questions.question_id,
+      'question_body', questions.question_body,
+      'question_date', questions.question_date,
+      'asker_name', questions.asker_name,
+      'question_helpfulness', questions.question_helpfulness,
+      'reported', questions.reported,
+      'answers', (SELECT json_agg(json_build_object(
+        'id', answers.answer_id,
+        'body', answers.body,
+        'date', answers.date,
+        'answerer_name', answers.answerer_name,
+        'helpfulness', answers.helpfulness,
+        'photos', (SELECT json_agg(json_build_object(
+          'id', photos.photo_id,
+          'url', photos.url))
+          FROM photos WHERE photos.answer_id = answers.answer_id)))
+          FROM answers WHERE answers.question = questions.question_id))
+          FROM questions WHERE product_id = ${product} AND questions.reported = 0 ORDER BY questions.question_helpfulness DESC limit ${limit};`)
       .then( async (result) => {
         if (result.rows.length === 0) {
           res.status(200).json(info);
           return;
         } else {
-        result.rows.forEach( async (object) => {
-          answer_ids.push(object.answer_id);
-          if (!info.results.some(e => e.question_id === object.question_id)) {
-            let answersObj = {};
-            answersObj[object.answer_id] = {
-              id: object.answer_id,
-              body: object.body,
-              date: new Date(Number(object.date)).toISOString(),
-              answerer_name: object.answerer_name,
-              helpfulness: object.helpfulness,
-              photos: []
-            };
-            info.results.push({
-              question_id: object.question_id,
-              question_body: object.question_body,
-              question_date: new Date(Number(object.question_date)).toISOString(),
-              asker_name: object.asker_name,
-              question_helpfulness: object.question_helpfulness,
-              reported: !!object.reported,
-              answers: answersObj
-            });
+          let questions = result.rows;
+          questions.forEach((question) => {
+            question.json_build_object.question_date = new Date(Number(question.json_build_object.question_date)).toISOString();
+            question.json_build_object.reported = !!question.json_build_object.reported;
+            let answerObj = {};
+            if (question.json_build_object.answers === null) {
+              question.json_build_object.answers = {};
             } else {
-              let index = info.results.findIndex(elem => elem.question_id === object.question_id);
-              info.results[index].answers[object.answer_id] = {
-                id: object.answer_id,
-                body: object.body,
-                date: object.date,
-                answerer_name: object.answerer_name,
-                helpfulness: object.helpfulness,
-                photos: []
-                };
-              };
-          })
-          let photos = await db.query(`SELECT answer_id, url FROM photos WHERE answer_id in (${answer_ids})`);
-          await info.results.forEach( (object) => {
-            for (let key in object.answers) {
-              photos.rows.forEach( (photo) => {
-                if (key === '' + photo.answer_id) {
-                  object.answers[key].photos.push(photo.url);
+              question?.json_build_object?.answers?.forEach((answer) => {
+                answer.date = new Date(Number(answer.date)).toISOString();
+                if (answer.photos === null) {
+                  answer.photos = [];
+                } else {
+                  let temp = [];
+                  answer.photos.forEach((obj) => {
+                    temp.push(obj.url);
+                  })
+                  answer.photos = temp;
                 }
+                answerObj[answer.id] = answer;
               })
+              question.json_build_object.answers = answerObj;
             }
-          });
-          res.status(200).json(info);
-          return;
+            info.results.push(question.json_build_object)
+          })
+        res.status(200).json(info);
+        return;
         }
       })
       .catch((err) => {
